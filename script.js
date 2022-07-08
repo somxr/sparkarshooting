@@ -19,8 +19,6 @@ const Animation = require('Animation');
 		Scene.root.findFirst('Device')
 	]);
 
-	material.cullMode['BACK'];
-
 	TouchGestures.onTap().subscribe(async (gesture) => {
 		const dynamicPlane = await Scene.create('Plane', {
 			name: 'Dynamic Plane',
@@ -32,7 +30,7 @@ const Animation = require('Animation');
 			material: material
 		});
 
-		// Add the dynamic plane as a child of the device object in the Scene panel (should be in world s)
+		// Add the dynamic plane as a child of the root in the Scene panel (should be in world space and independent from camera rotation?)
 		Scene.root.addChild(dynamicPlane);
 
 		//rotate plane 90 degrees (Pi in radians) to face camera so you can see it
