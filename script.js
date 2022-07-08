@@ -1,3 +1,6 @@
+//TO TEST THIS CODE, DOWNLOAD THE OFFICIAL DYNAMIC INSTANTIATION SPARK AR EXAMPLE PROJECT BELOW AND PASTE THIS CODE IN THE script.js FILE
+//https://sparkar.facebook.com/ar-studio/learn/scripting/dynamic-instantiation/
+
 // Load in the required modules
 const Scene = require('Scene');
 const Materials = require('Materials');
@@ -16,6 +19,8 @@ const Animation = require('Animation');
 		Scene.root.findFirst('Device')
 	]);
 
+	material.cullMode['BACK'];
+
 	TouchGestures.onTap().subscribe(async (gesture) => {
 		const dynamicPlane = await Scene.create('Plane', {
 			name: 'Dynamic Plane',
@@ -27,23 +32,28 @@ const Animation = require('Animation');
 			material: material
 		});
 
-		// Add the dynamic plane as a child of the Focal Distance object in the Scene panel
-		device.addChild(dynamicPlane);
+		// Add the dynamic plane as a child of the device object in the Scene panel (should be in world s)
+		Scene.root.addChild(dynamicPlane);
 
+		//rotate plane 90 degrees (Pi in radians) to face camera so you can see it
+		dynamicPlane.transform.rotationY = 3.142;
+
+		// Create a new forward facing vector
 		const vector = Reactive.vector(0, 0, -1);
 
+		// Rotate the plane by the plane's rotation vector
 		const rotatedVector = vector.rotate(dynamicPlane.transform.rotation);
 
 		// Set the velocity using delta time
 		const velocity = Time.deltaTimeMS.div(3000).mul(rotatedVector);
 
-		// Animate the cube along its forward vector at the velocity specified
+		// Animate the plane along its forward vector at the velocity specified
 		dynamicPlane.worldTransform.position = dynamicPlane.worldTransform.position.history(1).frame(-1).add(velocity);
 
 		// Time Driver allows you to specify a duration in milliseconds for the
 		// animation along with optional parameters for looping and mirroring.
 		const timeDriverParameters = {
-			durationMilliseconds: 1000,
+			durationMilliseconds: 3000,
 			loopCount: 1,
 			mirror: false
 		};
@@ -54,8 +64,8 @@ const Animation = require('Animation');
 		timeDriver.start();
 
 		timeDriver.onCompleted().subscribe((event) => {
-			//Scene.destroy(dynamicPlane);
-			Diagnostics.log('should destroy');
+			Scene.destroy(dynamicPlane);
+			//Diagnostics.log('should destroy');
 		});
 	});
 })();
